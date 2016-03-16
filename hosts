@@ -1,0 +1,97 @@
+[all:children]
+fabric
+spine
+leaf
+
+########################
+## Fabric devices     ##
+########################
+
+[fabric]
+fabric-01       junos_host=0.0.0.0    loopback_ip=100.0.0.1
+fabric-02       junos_host=0.0.0.0    loopback_ip=100.0.0.2
+
+#######################
+## Spines devices    ##
+#######################
+[spine:children]
+spine-mx
+spine-qfx
+
+[spine-qfx]
+qfx10002-01   junos_host=0.0.0.0    loopback_ip=100.0.0.11  dev_id=2
+qfx10002-02   junos_host=0.0.0.0    loopback_ip=100.0.0.12  dev_id=3
+
+[spine-mx]
+mx480-01      junos_host=0.0.0.0    loopback_ip=100.0.0.13  dev_id=4
+mx480-02      junos_host=0.0.0.0    loopback_ip=100.0.0.14  dev_id=5
+
+#######################
+## leaf devices      ##
+#######################
+[leaf:children]
+leaf-qfx-l2
+leaf-qfx-l3
+
+[leaf-qfx-l2]
+qfx5100-01    junos_host=0.0.0.0    loopback_ip=100.0.0.21
+qfx5100-02    junos_host=0.0.0.0    loopback_ip=100.0.0.22
+qfx5100-03    junos_host=0.0.0.0    loopback_ip=100.0.0.23
+qfx5100-04    junos_host=0.0.0.0    loopback_ip=100.0.0.24
+
+[leaf-qfx-l3]
+# nothing
+
+###########################
+## Group by Location     ##
+###########################
+
+[pod1]
+qfx10002-01
+qfx10002-02
+qfx5100-01
+qfx5100-02
+
+[pod2]
+mx480-01
+mx480-02
+qfx5100-03
+qfx5100-04
+
+#######################
+## Group by type     ##
+#######################
+
+[qfx10000]
+qfx10002-01
+qfx10002-02
+
+[qfx5000]
+qfx5100-01
+qfx5100-02
+qfx5100-03
+qfx5100-04
+fabric-01
+fabric-02
+
+[mx]
+mx480-01
+mx480-02
+
+###################################
+### Define variables per groups ###
+###################################
+[all:vars]
+ansible_ssh_user=root
+ansible_ssh_pass=<device password>
+mgmt_sub_mask=<subnet mask>
+netconf_port=830
+
+[qfx10000:vars]
+mgmt_port=em0
+
+[qfx5000:vars]
+mgmt_port=em0
+
+[mx:vars]
+mgmt_port=fxp0
